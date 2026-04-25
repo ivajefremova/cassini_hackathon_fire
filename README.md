@@ -96,7 +96,7 @@ The program follows a structured processing flow:
 }
 
 ---
-
+[cite_start][cite: 99,100,101]
 ## Calculation Methodology
 [cite_start]The engine estimates monthly contaminant loads ($kg$) based on burned upstream areas and land use categories[cite: 80, 81, 82].
 
