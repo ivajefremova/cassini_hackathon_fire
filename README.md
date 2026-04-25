@@ -96,7 +96,7 @@ The program follows a structured processing flow:
 }
 
 ---
-[cite_start][cite: 99,100,101]
+
 ## Calculation Methodology
 [cite_start]The engine estimates monthly contaminant loads ($kg$) based on burned upstream areas and land use categories[cite: 80, 81, 82].
 
@@ -154,7 +154,7 @@ aquafire/
 │ 
 └── output/                   # Pre-generated geospatial data from sentinel_pipeline with openeo
 ```
-[cite_start][cite: 176, 177, 178, 179, 180, 181, 187, 188]
+
 ---
 
 ##### Burn Severity and Perimeter Mapping
