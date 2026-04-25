@@ -8,16 +8,16 @@
 
 
 
-## 1. Executive Summary
-This report details a high-fidelity API and monitoring system designed to mitigate the tetriary environmental impacts of wildfires. While fire damage is often measured in hectares burned, the subsequent contamination of water reservoirs via ash runoff represents a multi-billion euro threat to the European insurance sectors. By integrating **Copernicus Sentinel** data, we provide a predictive risk-modeling tool that tracks toxicrunoff from the burn scar to the reservoir. 
-# Currently there doesn't exist any stakeholder for this specific detection, because systems usually focus on fire tracking and general water pollution, but not the bridge betweeen the two.
+## 1. Problem Summary
+This report details a high-fidelity API and monitoring system designed to mitigate the tetriary environmental impacts of wildfires. While fire damage is often measured in hectares burned, **the subsequent contamination of water reservoirs via ash runoff represents a multi-billion euro threat to the European insurance sectors**. By integrating **Copernicus Sentinel** data, we provide a predictive risk-modeling tool that tracks toxicrunoff from the burn scar to the reservoir. 
+### Currently there doesn't exist any stakeholder for this specific detection, because systems usually focus on fire tracking and general water pollution, but not the bridge betweeen the two.
 
 
 ---
 
 ## 2. The Problem Landscape
 
-### 2.1 The "Black Water" Phenomenon
+### 2.1 The Fire-Ash-Water Phenomenon
 Wildfires create a chemically complex layer of ash containing concentrated nitrates, phosphates, and heavy metals. When the first significant rain event occurs post-fire, this material is mobilized.
 Water contamination is a tertiary consequence — fire burns structures → pressure drop in pipes → benzene leaches in → water system is unusable for months → property becomes uninhabitable → insurance claim. This entire chain is currently unmodeled. What is modeled well is fire detection and water contamination detection. 
 * **The Erosion Factor:** Fires destroy the vegetation that stabilizes soil, leading to massive sediment transport.
