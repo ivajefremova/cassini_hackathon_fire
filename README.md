@@ -34,11 +34,10 @@ Our solution relies on the synergy between Copernicus assets to create a holisti
 
 | Satellite / Service | Instrument / Data | Application |
 | :--- | :--- | :--- |
-| **Sentinel-2** | Multispectral (MSI) | NIR and SWIR bands are used to calculate the **Normalized Burn Ratio (NBR)** to map fire perimeters and severity. |
-| **Sentinel-3** | OLCI & SLSTR | Monitoring water quality parameters like **Chlorophyll-a** and **Total Suspended Matter (TSM)** to validate runoff models. |
-| **CLMS** | Digital Elevation Models | Utilized to determine **topographic slope** and the flow direction of water toward reservoirs. |
-
-
+| **Sentinel-2** | Multispectral (MSI) | NIR and SWIR bands are used to calculate the **Normalized Burn Ratio (NBR)** to map fire perimeters and severity.  OLCI & SLSTR | Monitoring water quality parameters like **Chlorophyll-a** and **Total Suspended Matter (TSM)** to validate runoff models. |
+| **ERA5 ECMWF** | Rainfall forecats, intensity, water total precipitation and wind gusts
+| **LUCAS topsoil Survey** | Comprehensive dataset that exhibits the contents of the soil in potential burn areas
+| **CORINE LAND COVER** | Terrain specific data| Utilized to determine **topographic slope** and the flow direction of water toward reservoirs. |
 
 ---
 
@@ -66,12 +65,14 @@ When the API detects a CPI exceeding **0.75**, the system triggers a **"Critical
 ### 5.1 Data Pipeline
 The program follows a structured processing flow:
 
-1.  **Collection Querying:** Using the **Sentinel Hub API** to pull the latest L2A imagery.
+1.  **Collection Querying:** Using the **Sentinel OPENEO API** to pull the latest L2A imagery.
 2.  **Masking & Indices:** Automated cloud masking followed by NBR calculation.
 3.  **Watershed Analysis:** Utilizing libraries like **PySheds** to delineate the drainage basin of the target reservoir.
 4.  **API Payload:** Results are serialized into JSON for the frontend.
 
-[cite_start]ASHFLOW is a specialized risk engine designed to provide differentiated contamination forecasts for water bodies following wildfire events[cite: 2, 7]. [cite_start]This demo build focuses on the **Corinthia wildfire** in Greece (ignited 29 September 2024), which burned approximately 8,195 ha[cite: 4, 5].
+
+## Specifics showcased example
+[cite_start]This demo build focuses on the **Corinthia wildfire** in Greece (ignited 29 September 2024), which burned approximately 8,195 ha[cite: 4, 5].
 
 ---
 
@@ -218,4 +219,4 @@ By turning complex satellite imagery into a simple **"Risk Score,"** we empower 
 * **Iva Jefremova:** 
 * **Aleksei Pankov:** 
 * **Oskar Podkowa:** 
-#### The team displays collective contribution to the code and the presentation
+#### The team displays collective contribution to the code,the business model plan and the presentation
