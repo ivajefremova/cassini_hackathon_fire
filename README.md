@@ -26,15 +26,6 @@ Water contamination is a tertiary consequence — fire burns structures → pres
 ### 2.2 Business Model Analysis
 We have identified two primary sectors suffering in post-fire recovery: **Reinsurance Companies that deal with catastrophies, Governmental bodies which are the first target after a catastrophy and Environmental Consulting Firms that already have tracking systems but would aid in a specific fire-ash-water niche**. There is also a new law implemented all around the world, recently implemented in Italy as - CATNAT **Police CATASTROFALI**, that states that every institution with headquarters has to have catastrophy specific insurance. This increases the demand for insurance -> which increases the demand for risk evaluation and detection systems.
 
-#### **A. Agricultural Businesses**
-* **Equipment Damage:** Ash and fine sediment clog advanced irrigation filters and pumps, leading to mechanical failure.
-* **Crop Health:** High pH levels and heavy metal concentrations in irrigation water can lead to crop toxicity and loss of "organic" certifications.
-* **Financial Loss:** Operational costs typically spike by **15–25%** due to emergency water hauling.
-
-#### **B. Insurance Companies**
-* **Inaccurate Risk Assessment:** Traditional models fail to account for the delay between a fire and the resulting water quality claim.
-* **Payout Volatility:** Without predictive data, insurers cannot advise clients on mitigation, leading to avoidable maximum-loss payouts.
-
 ---
 
 ## 3. Space Data & Earth Observation Strategy
