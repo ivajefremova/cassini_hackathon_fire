@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ASHFLOW— Corinthia Fire Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+<style>
+/* ══════════════════════════════════════════════════
+   ASHFLOW — PAGE 1: PIPELINE SHOWCASE
+   Tone: Scientific instrument meets brutalist editorial.
+   Dark background, amber accents, monospaced data,
+   dramatic type scale.
+══════════════════════════════════════════════════ */
+
+:root {
+  --black:   #080a0c;
+  --surface: #0f1215;
+  --card:    #151a1e;
+  --border:  #1e2830;
+  --border2: #263040;
+  --text:    #d8e4ec;
+  --muted:   #5a7080;
+  --dim:     #384858;
+  --amber:   #f0a030;
+  --amber2:  #c07820;
+  --red:     #e04040;
+  --orange:  #d06030;
+  --green:   #38a060;
+  --blue:    #3880c0;
+  --teal:    #208878;
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(8,10,12,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-mark {
+  width: 28px; height: 28px;
+  background: var(--amber);
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  display: grid;
+  place-items: center;
+}
+
+nav { display: flex; gap: 2px; }
+nav a {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+nav a:hover { color: var(--text); background: var(--border); }
+nav a.active { color: var(--amber); }
+.nav-cta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--amber);
+  color: var(--black);
+  padding: 7px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: opacity 0.15s;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ── HERO ── */
+.hero {
+  margin-top: 56px;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-left {
+  padding: 80px 40px 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.fire-date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--amber);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fire-date::before {
+  content: '';
+  display: block;
+  width: 24px; height: 1px;
+  background: var(--amber);
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 68px);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  color: #fff;
+  margin-bottom: 28px;
+}
+h1 em {
+  font-style: normal;
+  color: var(--amber);
+}
+
+.hero-desc {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 440px;
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 440px;
+  margin-bottom: 40px;
+}
+.hero-stat {
+  background: var(--card);
+  padding: 16px 20px;
+}
+.hero-stat-val {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.hero-stat-val span { font-size: 14px; color: var(--amber); }
+.hero-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pipeline-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  border: 1px solid;
+}
+.badge-amber  { color: var(--amber);  border-color: var(--amber2);  background: rgba(240,160,48,0.08); }
+.badge-green  { color: var(--green);  border-color: #204a30;        background: rgba(56,160,96,0.08); }
+.badge-blue   { color: var(--blue);   border-color: #1a3a60;        background: rgba(56,128,192,0.08); }
+.badge-red    { color: var(--red);    border-color: #602020;        background: rgba(224,64,64,0.08); }
+
+/* ── HERO RIGHT: SATELLITE VISUALIZATION ── */
+.hero-right {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+}
+
+.satellite-frame {
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1;
+  position: relative;
+}
+
+.sat-map {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  background: #0a1520;
+  border: 1px solid var(--border2);
+}
+
+/* Simulated dNBR raster — canvas-drawn in JS */
+#dnbr-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sat-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+/* Grid lines overlay on satellite image */
+.sat-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.sat-label {
+  position: absolute;
+  top: 14px; left: 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.08em;
+  background: rgba(0,0,0,0.6);
+  padding: 4px 8px;
+  border-radius: 3px;
+}
+.sat-label-br {
+  position: absolute;
+  bottom: 14px; right: 14px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+  background: rgba(0,0,0,0.5);
+  padding: 3px 7px;
+  border-radius: 3px;
+  line-height: 1.5;
+  text-align: right;
+}
+
+/* Lake markers */
+.lake-pin {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transform: translate(-50%, -100%);
+  cursor: pointer;
+}
+.lake-pin-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--blue);
+  box-shadow: 0 0 0 3px rgba(56,128,192,0.3), 0 0 12px rgba(56,128,192,0.5);
+}
+.lake-pin-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #fff;
+  background: rgba(0,0,0,0.75);
+  padding: 2px 6px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+/* dNBR legend */
+.dnbr-legend {
+  position: absolute;
+  bottom: 50px; left: 14px;
+  background: rgba(0,0,0,0.75);
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+.dnbr-legend-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.dnbr-legend-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 2px;
+  overflow: hidden;
+  width: 120px;
+  margin-bottom: 4px;
+}
+.dnbr-legend-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--muted);
+  width: 120px;
+}
+
+/* ── SECTION LAYOUT ── */
+main { padding: 0 60px; max-width: 1400px; margin: 0 auto; }
+
+.section {
+  padding: 80px 0;
+  border-top: 1px solid var(--border);
+}
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  max-width: 60px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.section-sub {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 600px;
+  margin-bottom: 48px;
+}
+
+/* ── PIPELINE DIAGRAM ── */
+.pipeline-diagram {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 60px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.pipeline-step {
+  flex: 1;
+  min-width: 180px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 24px 20px;
+  position: relative;
+}
+.pipeline-step:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--amber);
+  z-index: 2;
+  background: var(--card);
+  width: 28px;
+  text-align: center;
+}
+.pipeline-step:first-child { border-radius: 6px 0 0 6px; }
+.pipeline-step:last-child  { border-radius: 0 6px 6px 0; }
+
+.step-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.step-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.step-source {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--teal);
+  margin-bottom: 8px;
+}
+.step-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ── LAKE CARDS ── */
+.lake-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 48px;
+}
+.lake-card {
+  background: var(--card);
+  padding: 36px 32px;
+}
+
+.lake-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.lake-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+.lake-subtitle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.risk-chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+.risk-high     { background: rgba(224,64,64,0.15);  color: var(--red);    border: 1px solid rgba(224,64,64,0.3); }
+.risk-moderate { background: rgba(240,160,48,0.15); color: var(--amber);  border: 1px solid rgba(240,160,48,0.3); }
+.risk-low      { background: rgba(56,160,96,0.15);  color: var(--green);  border: 1px solid rgba(56,160,96,0.3); }
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.stat-row:last-of-type { border-bottom: none; }
+.stat-key { color: var(--muted); font-family: var(--font-mono); font-size: 11px; }
+.stat-val { color: #fff; font-weight: 500; }
+.stat-val.amber { color: var(--amber); font-family: var(--font-mono); }
+
+/* ── FORECAST CHART ── */
+.forecast-section {
+  margin-top: 48px;
+}
+.chart-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 32px;
+}
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+.chart-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+.chart-sub { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+.chart-legend {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+/* SVG chart */
+.chart-svg-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+svg.forecast-chart {
+  width: 100%;
+  min-width: 600px;
+  height: 240px;
+  display: block;
+}
+
+/* ── CONTAMINATION TABLE ── */
+.contam-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 32px;
+}
+.contam-table th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border2);
+}
+.contam-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.contam-table tr:last-child td { border-bottom: none; }
+.contam-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.risk-bar-cell { width: 140px; }
+.risk-bar-track {
+  height: 4px;
+  background: var(--border2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.risk-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+/* ── CODE BLOCK ── */
+.code-block-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 24px;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+.code-header-dots {
+  display: flex;
+  gap: 6px;
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #ff5f57; }
+.dot-y { background: #ffbd2e; }
+.dot-g { background: #28ca42; }
+.code-filename {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.code-body {
+  padding: 24px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  color: #8ba8bc;
+  overflow-x: auto;
+  white-space: pre;
+  max-height: 380px;
+  overflow-y: auto;
+}
+.code-body::-webkit-scrollbar { width: 4px; height: 4px; }
+.code-body::-webkit-scrollbar-track { background: transparent; }
+.code-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Syntax highlighting */
+.kw { color: #c792ea; }
+.fn { color: #82aaff; }
+.st { color: #c3e88d; }
+.cm { color: #546e7a; font-style: italic; }
+.nm { color: var(--amber); }
+.op { color: #89ddff; }
+
+/* ── API RESPONSE VIEWER ── */
+.api-response {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.api-response-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.api-method {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: rgba(56,160,96,0.15);
+  color: var(--green);
+  border: 1px solid rgba(56,160,96,0.3);
+  padding: 3px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+.api-url {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+}
+.api-status {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--green);
+}
+.api-body {
+  padding: 20px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.8;
+  color: #8ba8bc;
+  overflow-x: auto;
+  white-space: pre;
+  max-height: 500px;
+  overflow-y: auto;
+}
+.api-body::-webkit-scrollbar { width: 4px; }
+.api-body::-webkit-scrollbar-track { background: transparent; }
+.api-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.j-key   { color: #73a8d0; }
+.j-str   { color: #c3e88d; }
+.j-num   { color: var(--amber); }
+.j-bool  { color: #c792ea; }
+.j-null  { color: var(--muted); }
+.j-risk-high { color: var(--red); }
+.j-risk-mod  { color: var(--amber); }
+
+/* ── RECOMMENDATIONS ── */
+.rec-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+.rec-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  align-items: flex-start;
+}
+.rec-icon {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+}
+.rec-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+}
+.rec-red    { background: rgba(224,64,64,0.15);  border: 1px solid rgba(224,64,64,0.2); }
+.rec-amber  { background: rgba(240,160,48,0.15); border: 1px solid rgba(240,160,48,0.2); }
+.rec-green  { background: rgba(56,160,96,0.15);  border: 1px solid rgba(56,160,96,0.2); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 80px;
+}
+.footer-left {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.footer-right {
+  display: flex;
+  gap: 20px;
+}
+.footer-right a {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: color 0.15s;
+}
+.footer-right a:hover { color: var(--text); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── FADE IN ANIMATION ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.7s ease both; }
+.fade-up-1 { animation-delay: 0.1s; }
+.fade-up-2 { animation-delay: 0.2s; }
+.fade-up-3 { animation-delay: 0.3s; }
+.fade-up-4 { animation-delay: 0.5s; }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="logo">
+    <div class="logo-mark"></div>
+    ASHFLOW
+  </div>
+  <nav>
+    <a href="index.html" class="active">Pipeline Output</a>
+    <a href="explorer.html">Live Explorer</a>
+  </nav>
+  <a href="explorer.html" class="nav-cta">Try the API →</a>
+</header>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-left fade-up">
+    <div class="fire-date">CORINTHIA WILDFIRE · 29 SEPTEMBER 2024 · EMSR767</div>
+    <h1>Post-fire<br/><em>water risk</em><br/>from orbit.</h1>
+    <p class="hero-desc">
+      ASHFLOW uses Sentinel-2 satellite data to compute burn severity,
+      identify contamination sources, and forecast month-by-month heavy
+      metal and organic pollutant loads reaching downstream reservoirs.
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-val">8,195<span>ha</span></div>
+        <div class="hero-stat-lbl">Total burned</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">2<span></span></div>
+        <div class="hero-stat-lbl">Lakes at risk</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">6<span>mo</span></div>
+        <div class="hero-stat-lbl">Forecast window</div>
+      </div>
+    </div>
+    <div class="pipeline-badges fade-up-2">
+      <span class="badge badge-amber">Sentinel-2 L2A</span>
+      <span class="badge badge-green">openEO</span>
+      <span class="badge badge-blue">dNBR Analysis</span>
+      <span class="badge badge-blue">CORINE LCU</span>
+      <span class="badge badge-red">EMSR767</span>
+    </div>
+  </div>
+
+  <div class="hero-right fade-up-3">
+    <div class="satellite-frame">
+      <div class="sat-map">
+        <canvas id="dnbr-canvas"></canvas>
+        <div class="sat-overlay"></div>
+        <div class="sat-label">SENTINEL-2 L2A · dNBR · 2024-10-01</div>
+        <div class="sat-label-br">EPSG:4326<br/>22.20°E–22.65°E<br/>37.80°N–38.05°N</div>
+
+        <!-- Lake Stymfalia pin: ~60% right, 65% down -->
+        <div class="lake-pin" style="left:62%;top:65%">
+          <div class="lake-pin-label">Lake Stymfalia</div>
+          <div class="lake-pin-dot"></div>
+        </div>
+
+        <!-- Lake Doxa pin: ~20% right, 38% down -->
+        <div class="lake-pin" style="left:21%;top:38%">
+          <div class="lake-pin-label">Lake Doxa</div>
+          <div class="lake-pin-dot" style="background:var(--teal);box-shadow:0 0 0 3px rgba(32,136,120,0.3),0 0 12px rgba(32,136,120,0.5)"></div>
+        </div>
+
+        <div class="dnbr-legend">
+          <div class="dnbr-legend-title">dNBR BURN SEVERITY</div>
+          <div class="dnbr-legend-bar">
+            <div style="flex:1;background:#1a3a1a"></div>
+            <div style="flex:1;background:#3a6820"></div>
+            <div style="flex:1;background:#d4a020"></div>
+            <div style="flex:1;background:#d06030"></div>
+            <div style="flex:1;background:#c02020"></div>
+          </div>
+          <div class="dnbr-legend-labels">
+            <span>Low</span><span>High</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MAIN CONTENT ══ -->
+<main>
+
+  <!-- ── SECTION: PIPELINE ── -->
+  <section class="section" id="pipeline">
+    <div class="section-label">01 · Data Pipeline</div>
+    <h2 class="section-title">How the satellite data flows</h2>
+    <p class="section-sub">Five steps from raw Sentinel-2 imagery to a contamination risk score, running on Copernicus cloud infrastructure.</p>
+
+    <div class="pipeline-diagram">
+      <div class="pipeline-step">
+        <div class="step-num">STEP 01</div>
+        <div class="step-title">Sentinel-2 L2A Load</div>
+        <div class="step-source">↳ openEO · CDSE</div>
+        <div class="step-desc">Pre-fire (Jul–Sep) and post-fire (Oct) median composites. Bands B08 (NIR) + B12 (SWIR). Max 85% cloud cover.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">STEP 02</div>
+        <div class="step-title">dNBR Computation</div>
+        <div class="step-source">↳ openEO · Cloud</div>
+        <div class="step-desc">NBR = (B08–B12)/(B08+B12). dNBR = NBR_pre − NBR_post. Higher value → more severe burn.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">STEP 03</div>
+        <div class="step-title">Catchment Extraction</div>
+        <div class="step-source">↳ rasterio · DEM</div>
+        <div class="step-desc">Per-lake catchment bbox masks dNBR raster. Pixel count × area → burned hectares by severity class.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">STEP 04</div>
+        <div class="step-title">CORINE Land Use</div>
+        <div class="step-source">↳ EEA · Static</div>
+        <div class="step-desc">Fixed land-use fractions (forest, agricultural, urban) determine which contaminants are emitted.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">STEP 05</div>
+        <div class="step-title">Forecast Engine</div>
+        <div class="step-source">↳ FastAPI · Python</div>
+        <div class="step-desc">Emission factors × severity multiplier × exponential decay → kg/month per contaminant per lake.</div>
+      </div>
+    </div>
+
+    <!-- Code snippet: the dNBR computation -->
+    <div class="code-block-wrap">
+      <div class="code-header">
+        <div class="code-header-dots">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+        </div>
+        <div class="code-filename">sentinel_pipeline.py · dNBR computation</div>
+      </div>
+      <div class="code-body"><span class="cm"># ── Pre-fire composite ────────────────────────────────────────</span>
+<span class="nm">cube_before</span> <span class="op">=</span> conn.<span class="fn">load_collection</span>(
+    <span class="st">"SENTINEL2_L2A"</span>,
+    spatial_extent<span class="op">=</span>SPATIAL_EXTENT,
+    temporal_extent<span class="op">=</span>BEFORE_DATES,      <span class="cm"># "2024-07-01" → "2024-09-20"</span>
+    bands<span class="op">=</span>[<span class="st">"B08"</span>, <span class="st">"B12"</span>],
+    max_cloud_cover<span class="op">=</span><span class="nm">85</span>,
+)
+<span class="nm">nir_before</span>  <span class="op">=</span> cube_before.<span class="fn">band</span>(<span class="st">"B08"</span>)
+<span class="nm">swir_before</span> <span class="op">=</span> cube_before.<span class="fn">band</span>(<span class="st">"B12"</span>)
+<span class="nm">nbr_before</span>  <span class="op">=</span> (nir_before <span class="op">-</span> swir_before) <span class="op">/</span> (nir_before <span class="op">+</span> swir_before)
+<span class="nm">nbr_before_mean</span> <span class="op">=</span> nbr_before.<span class="fn">reduce_dimension</span>(dimension<span class="op">=</span><span class="st">"t"</span>, reducer<span class="op">=</span><span class="st">"mean"</span>)
+
+<span class="cm"># ── Post-fire composite ───────────────────────────────────────</span>
+<span class="nm">cube_after</span> <span class="op">=</span> conn.<span class="fn">load_collection</span>(
+    <span class="st">"SENTINEL2_L2A"</span>,
+    spatial_extent<span class="op">=</span>SPATIAL_EXTENT,
+    temporal_extent<span class="op">=</span>AFTER_DATES,       <span class="cm"># "2024-10-01" → "2024-10-25"</span>
+    bands<span class="op">=</span>[<span class="st">"B08"</span>, <span class="st">"B12"</span>],
+    max_cloud_cover<span class="op">=</span><span class="nm">85</span>,
+)
+<span class="nm">nir_after</span>  <span class="op">=</span> cube_after.<span class="fn">band</span>(<span class="st">"B08"</span>)
+<span class="nm">swir_after</span> <span class="op">=</span> cube_after.<span class="fn">band</span>(<span class="st">"B12"</span>)
+<span class="nm">nbr_after</span>  <span class="op">=</span> (nir_after <span class="op">-</span> swir_after) <span class="op">/</span> (nir_after <span class="op">+</span> swir_after)
+<span class="nm">nbr_after_mean</span> <span class="op">=</span> nbr_after.<span class="fn">reduce_dimension</span>(dimension<span class="op">=</span><span class="st">"t"</span>, reducer<span class="op">=</span><span class="st">"mean"</span>)
+
+<span class="cm"># ── dNBR = pre – post  (positive = burned) ───────────────────</span>
+<span class="nm">dnbr</span> <span class="op">=</span> nbr_before_mean <span class="op">-</span> nbr_after_mean
+<span class="nm">result</span> <span class="op">=</span> dnbr.<span class="fn">save_result</span>(format<span class="op">=</span><span class="st">"GTiff"</span>)
+result.<span class="fn">download</span>(<span class="st">"output/dnbr_corinthia.tif"</span>)
+</div>
+    </div>
+  </section>
+
+  <!-- ── SECTION: LAKE ANALYSIS ── -->
+  <section class="section" id="lakes">
+    <div class="section-label">02 · Lake Risk Analysis</div>
+    <h2 class="section-title">Two lakes, two risk profiles</h2>
+    <p class="section-sub">Same fire, different catchment exposure — dNBR raster clipped to each lake's upstream basin reveals distinct contamination signatures.</p>
+
+    <div class="lake-grid">
+      <!-- Stymfalia -->
+      <div class="lake-card">
+        <div class="lake-card-header">
+          <div>
+            <div class="lake-name">Lake Stymfalia</div>
+            <div class="lake-subtitle">Natural wetland · Natura 2000 · 626m</div>
+          </div>
+          <div class="risk-chip risk-high">HIGH RISK</div>
+        </div>
+
+        <div class="stat-row"><span class="stat-key">catchment_total_ha</span><span class="stat-val">8,200 ha</span></div>
+        <div class="stat-row"><span class="stat-key">catchment_burned_ha</span><span class="stat-val amber">3,420 ha</span></div>
+        <div class="stat-row"><span class="stat-key">burned_fraction</span><span class="stat-val amber">41.7%</span></div>
+        <div class="stat-row"><span class="stat-key">mean_dnbr</span><span class="stat-val">0.380</span></div>
+        <div class="stat-row"><span class="stat-key">mean_severity_class</span><span class="stat-val">2 — moderate-low</span></div>
+        <div class="stat-row"><span class="stat-key">primary_use</span><span class="stat-val">Ecological / limited irrigation</span></div>
+        <div class="stat-row"><span class="stat-key">dominant_contaminant</span><span class="stat-val">Dissolved organic carbon</span></div>
+      </div>
+
+      <!-- Doxa -->
+      <div class="lake-card" style="border-left:1px solid var(--border2)">
+        <div class="lake-card-header">
+          <div>
+            <div class="lake-name">Lake Doxa</div>
+            <div class="lake-subtitle">Artificial reservoir · 900m · Feneos valley</div>
+          </div>
+          <div class="risk-chip risk-moderate">MODERATE RISK</div>
+        </div>
+
+        <div class="stat-row"><span class="stat-key">catchment_total_ha</span><span class="stat-val">6,100 ha</span></div>
+        <div class="stat-row"><span class="stat-key">catchment_burned_ha</span><span class="stat-val amber">1,595 ha</span></div>
+        <div class="stat-row"><span class="stat-key">burned_fraction</span><span class="stat-val amber">26.2%</span></div>
+        <div class="stat-row"><span class="stat-key">mean_dnbr</span><span class="stat-val">0.290</span></div>
+        <div class="stat-row"><span class="stat-key">mean_severity_class</span><span class="stat-val">2 — moderate-low</span></div>
+        <div class="stat-row"><span class="stat-key">primary_use</span><span class="stat-val">Irrigation and water supply</span></div>
+        <div class="stat-row"><span class="stat-key">dominant_contaminant</span><span class="stat-val">Nitrates (agricultural land)</span></div>
+      </div>
+    </div>
+
+    <!-- Severity breakdown -->
+    <div class="chart-wrap">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Burn Severity Breakdown</div>
+          <div class="chart-sub">Hectares per USGS severity class within each lake catchment</div>
+        </div>
+        <div class="chart-legend" style="font-size:11px;font-family:var(--font-mono)">
+          <span><span class="legend-dot" style="background:#3a6820"></span>Low</span>
+          <span><span class="legend-dot" style="background:#d4a020"></span>Mod-Low</span>
+          <span><span class="legend-dot" style="background:#d06030"></span>Mod-High</span>
+          <span><span class="legend-dot" style="background:#c02020"></span>High</span>
+        </div>
+      </div>
+      <div class="chart-svg-wrap">
+        <svg class="forecast-chart" id="severity-chart" viewBox="0 0 800 200"></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION: FORECAST ── -->
+  <section class="section" id="forecast">
+    <div class="section-label">03 · Contamination Forecast</div>
+    <h2 class="section-title">Monthly pollutant load · kg</h2>
+    <p class="section-sub">Total contamination mass reaching each lake per month, computed from emission factors × severity multiplier × exponential decay.</p>
+
+    <div class="chart-wrap">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">6-Month Contamination Forecast</div>
+          <div class="chart-sub">October 2024 – March 2025 · Both lakes · kg/month total load</div>
+        </div>
+        <div class="chart-legend" style="font-size:11px;font-family:var(--font-mono)">
+          <span><span class="legend-dot" style="background:#3880c0"></span>Stymfalia</span>
+          <span><span class="legend-dot" style="background:#208878"></span>Doxa</span>
+        </div>
+      </div>
+      <div class="chart-svg-wrap">
+        <svg class="forecast-chart" id="forecast-chart" viewBox="0 0 800 220"></svg>
+      </div>
+    </div>
+
+    <!-- Contaminant table -->
+    <table class="contam-table" style="margin-top:32px">
+      <thead>
+        <tr>
+          <th>Contaminant</th>
+          <th>Source</th>
+          <th>Month 1 Load (kg)</th>
+          <th style="width:160px">Risk Level</th>
+          <th>Decay Class</th>
+          <th>Peak Month</th>
+        </tr>
+      </thead>
+      <tbody id="contam-tbody"></tbody>
+    </table>
+  </section>
+
+  <!-- ── SECTION: API OUTPUT ── -->
+  <section class="section" id="api">
+    <div class="section-label">04 · API Response</div>
+    <h2 class="section-title">Live forecast endpoint</h2>
+    <p class="section-sub">The FastAPI backend exposes a REST interface. Here's the raw JSON response from <code style="font-family:var(--font-mono);font-size:13px;color:var(--amber)">/api/forecast/stymfalia</code>.</p>
+
+    <div class="api-response">
+      <div class="api-response-header">
+        <span class="api-method">GET</span>
+        <span class="api-url">http://localhost:8000/api/forecast/stymfalia?months=6</span>
+        <span class="api-status">● 200 OK · 38ms</span>
+      </div>
+      <div class="api-body" id="api-output"></div>
+    </div>
+  </section>
+
+  <!-- ── SECTION: RECOMMENDATIONS ── -->
+  <section class="section" id="recommendations">
+    <div class="section-label">05 · Recommendations</div>
+    <h2 class="section-title">Actionable output</h2>
+    <p class="section-sub">AquaFire generates plain-English recommendations for water managers, insurers, and agricultural users based on the satellite-derived risk profile.</p>
+
+    <ul class="rec-list" id="rec-list"></ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-left">
+    AquaFire · CASSINI Space for Water 2026<br/>
+    Sentinel-2 data © ESA / Copernicus · CORINE Land Cover © EEA
+  </div>
+  <div class="footer-right">
+    <a href="index.html">Pipeline</a>
+    <a href="explorer.html">Live Explorer</a>
+    <a href="https://github.com" target="_blank">GitHub</a>
+    <a href="http://localhost:8000/docs" target="_blank">API Docs</a>
+  </div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════
+   PAGE 1 JAVASCRIPT
+══════════════════════════════════════════════════ */
+
+// ── MOCK DATA (mirrors real API output from forecast.py)
+const MOCK = {
+  stymfalia: {
+    location: "Lake Stymfalia",
+    status: "high_risk",
+    satellite_data: {
+      catchment_total_ha: 8200, catchment_burned_ha: 3420,
+      burned_fraction_pct: 41.7, mean_dnbr: 0.380, mean_severity_class: 2,
+      severity_breakdown_ha: { low: 820, moderate_low: 1540, moderate_high: 890, high: 170 }
+    },
+    monthly_forecast: [
+      { month:1, label:"October 2024",  total_load_kg:1284.6, dominant_contaminant:"Dissolved organic carbon",
+        contaminants: { "Dissolved organic carbon":{load_kg:420,risk:"high"}, "PAHs":{load_kg:196,risk:"high"}, "Phosphorus":{load_kg:85,risk:"high"}, "Nitrates":{load_kg:284,risk:"high"}, "Pesticide residues":{load_kg:58,risk:"moderate"}, "Copper":{load_kg:77,risk:"high"}, "VOCs":{load_kg:164,risk:"high"} }},
+      { month:2, label:"November 2024", total_load_kg:897.4, dominant_contaminant:"Dissolved organic carbon",
+        contaminants: {}},
+      { month:3, label:"December 2024", total_load_kg:626.8, dominant_contaminant:"Dissolved organic carbon", contaminants: {}},
+      { month:4, label:"January 2025",  total_load_kg:438.0, dominant_contaminant:"PAHs", contaminants: {}},
+      { month:5, label:"February 2025", total_load_kg:306.0, dominant_contaminant:"PAHs", contaminants: {}},
+      { month:6, label:"March 2025",    total_load_kg:213.8, dominant_contaminant:"Nitrates", contaminants: {}}
+    ],
+    high_risk_contaminants: ["Dissolved organic carbon","PAHs","Phosphorus","Nitrates","Copper","VOCs"],
+    safe_after_month: 5,
+    recommendations: [
+      "Peak contamination load of 1,285 kg expected in October 2024. Risk diminishes significantly by month 5.",
+      "3,267 ha of burned forest/shrubland drains upstream. PAH and organic carbon peaks in month 1 then decays ~35%/month. Prepare activated carbon water treatment before first rain.",
+      "616 ha of agricultural land burned upstream. Pesticide residues and elevated nitrates/copper/zinc expected months 1–3. Suspend irrigation from Lake Stymfalia until water quality is confirmed.",
+      "Test water at Lake Stymfalia inlet after each rainfall event exceeding 15mm during the first 5 months post-fire."
+    ]
+  },
+  doxa: {
+    location: "Lake Doxa",
+    status: "moderate_risk",
+    satellite_data: {
+      catchment_total_ha: 6100, catchment_burned_ha: 1595,
+      burned_fraction_pct: 26.2, mean_dnbr: 0.290, mean_severity_class: 2,
+      severity_breakdown_ha: { low: 510, moderate_low: 720, moderate_high: 290, high: 75 }
+    },
+    monthly_forecast: [
+      { month:1, label:"October 2024",  total_load_kg:712.3, dominant_contaminant:"Nitrates" },
+      { month:2, label:"November 2024", total_load_kg:497.8, dominant_contaminant:"Nitrates" },
+      { month:3, label:"December 2024", total_load_kg:347.6, dominant_contaminant:"Dissolved organic carbon" },
+      { month:4, label:"January 2025",  total_load_kg:242.9, dominant_contaminant:"PAHs" },
+      { month:5, label:"February 2025", total_load_kg:169.7, dominant_contaminant:"PAHs" },
+      { month:6, label:"March 2025",    total_load_kg:118.5, dominant_contaminant:"Nitrates" }
+    ],
+    high_risk_contaminants: ["Nitrates","Pesticide residues","Copper"],
+    safe_after_month: 4
+  }
+};
+
+// ── dNBR CANVAS (simulated satellite raster)
+function drawDNBR() {
+  const canvas = document.getElementById('dnbr-canvas');
+  if (!canvas) return;
+  const w = canvas.offsetWidth || 500;
+  const h = canvas.offsetHeight || 500;
+  canvas.width  = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+
+  // Background: dark terrain
+  const bg = ctx.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0,   '#0a1a0a');
+  bg.addColorStop(0.4, '#0c1a0e');
+  bg.addColorStop(1,   '#081210');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, w, h);
+
+  // Draw simulated fire scar patches (dNBR heat map)
+  const patches = [
+    // Main fire area — center-right (Stymfalia catchment)
+    { x: 0.62, y: 0.42, rx: 0.18, ry: 0.22, sev: 4 },
+    { x: 0.55, y: 0.52, rx: 0.12, ry: 0.14, sev: 3 },
+    { x: 0.70, y: 0.35, rx: 0.10, ry: 0.12, sev: 3 },
+    { x: 0.48, y: 0.48, rx: 0.08, ry: 0.10, sev: 2 },
+    // Doxa catchment — upper left
+    { x: 0.22, y: 0.36, rx: 0.11, ry: 0.14, sev: 3 },
+    { x: 0.18, y: 0.44, rx: 0.08, ry: 0.10, sev: 2 },
+    { x: 0.30, y: 0.30, rx: 0.07, ry: 0.08, sev: 2 },
+    // Outer burned fringe (low severity)
+    { x: 0.40, y: 0.60, rx: 0.14, ry: 0.10, sev: 1 },
+    { x: 0.75, y: 0.55, rx: 0.10, ry: 0.08, sev: 1 },
+    { x: 0.28, y: 0.55, rx: 0.08, ry: 0.07, sev: 1 },
+  ];
+
+  const sevColors = [
+    null,
+    [40, 80, 20,  0.55],  // low severity: dark green-brown
+    [180,140, 20, 0.65],  // mod-low: amber
+    [190, 80, 25, 0.72],  // mod-high: orange
+    [180, 20, 20, 0.80],  // high: deep red
+  ];
+
+  patches.forEach(p => {
+    const [r,g,b,a] = sevColors[p.sev];
+    const cx = p.x * w;
+    const cy = p.y * h;
+    const rx = p.rx * w;
+    const ry = p.ry * h;
+
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
+    grad.addColorStop(0,   `rgba(${r},${g},${b},${a})`);
+    grad.addColorStop(0.6, `rgba(${r},${g},${b},${a * 0.5})`);
+    grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+
+    ctx.save();
+    ctx.scale(1, ry / rx);
+    ctx.beginPath();
+    ctx.arc(cx, cy * (rx / ry), rx, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.restore();
+  });
+
+  // Terrain noise overlay
+  for (let i = 0; i < 2000; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.015})`;
+    ctx.fillRect(x, y, 1, 1);
+  }
+
+  // Lake bodies (blue patches)
+  // Stymfalia ~62% x, 65% y
+  drawLakeBlob(ctx, 0.62 * w, 0.65 * h, 22, 14);
+  // Doxa ~21% x, 38% y
+  drawLakeBlob(ctx, 0.21 * w, 0.38 * h, 14, 10);
+}
+
+function drawLakeBlob(ctx, cx, cy, rx, ry) {
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rx);
+  g.addColorStop(0,   'rgba(40,100,180,0.9)');
+  g.addColorStop(0.7, 'rgba(30, 80,140,0.7)');
+  g.addColorStop(1,   'rgba(20, 60,100,0)');
+  ctx.save();
+  ctx.scale(1, ry / rx);
+  ctx.beginPath();
+  ctx.arc(cx, cy * (rx / ry), rx, 0, Math.PI * 2);
+  ctx.fillStyle = g;
+  ctx.fill();
+  ctx.restore();
+}
+
+// ── SEVERITY BAR CHART
+function drawSeverityChart() {
+  const svg = document.getElementById('severity-chart');
+  if (!svg) return;
+
+  const data = {
+    stymfalia: { low: 820, moderate_low: 1540, moderate_high: 890, high: 170 },
+    doxa:      { low: 510, moderate_low: 720,  moderate_high: 290, high: 75  }
+  };
+
+  const keys   = ['low','moderate_low','moderate_high','high'];
+  const colors = ['#3a6820','#d4a020','#d06030','#c02020'];
+  const labels = ['Oct 2024\n(Stymfalia)', 'Oct 2024\n(Doxa)'];
+  const lakes  = ['stymfalia','doxa'];
+
+  const vb = svg.getAttribute('viewBox').split(' ').map(Number);
+  const W = vb[2], H = vb[3];
+  const pad = { top: 20, right: 30, bottom: 40, left: 60 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+
+  const maxVal = 3420;
+  const barW   = 80;
+  const gap    = 120;
+  const startX = pad.left + 40;
+
+  let html = `<g transform="translate(${pad.left},${pad.top})">`;
+
+  // Y axis gridlines
+  [0, 1000, 2000, 3000].forEach(v => {
+    const y = ch - (v / maxVal) * ch;
+    html += `<line x1="0" y1="${y}" x2="${cw}" y2="${y}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+    html += `<text x="-8" y="${y+4}" fill="#5a7080" font-size="10" text-anchor="end" font-family="DM Mono">${v}</text>`;
+  });
+
+  // Stacked bars
+  lakes.forEach((lake, li) => {
+    const bx = startX + li * gap;
+    let cumY = ch;
+    keys.forEach((k, ki) => {
+      const val = data[lake][k];
+      const bh  = (val / maxVal) * ch;
+      cumY -= bh;
+      html += `<rect x="${bx}" y="${cumY}" width="${barW}" height="${bh}" fill="${colors[ki]}" rx="1"/>`;
+    });
+    // Total label
+    const total = Object.values(data[lake]).reduce((a,b) => a+b, 0);
+    html += `<text x="${bx + barW/2}" y="${ch - (total/maxVal)*ch - 6}" fill="#fff" font-size="11" text-anchor="middle" font-family="DM Mono">${total.toLocaleString()} ha</text>`;
+    html += `<text x="${bx + barW/2}" y="${ch + 20}" fill="#5a7080" font-size="10" text-anchor="middle" font-family="DM Sans">${lake === 'stymfalia' ? 'Stymfalia' : 'Doxa'}</text>`;
+  });
+
+  html += '</g>';
+  svg.innerHTML = html;
+}
+
+// ── FORECAST LINE CHART
+function drawForecastChart() {
+  const svg = document.getElementById('forecast-chart');
+  if (!svg) return;
+
+  const stym_vals = [1284.6, 897.4, 626.8, 438.0, 306.0, 213.8];
+  const doxa_vals = [712.3,  497.8, 347.6, 242.9, 169.7, 118.5];
+  const months    = ['Oct','Nov','Dec','Jan','Feb','Mar'];
+
+  const vb = svg.getAttribute('viewBox').split(' ').map(Number);
+  const W = vb[2], H = vb[3];
+  const pad = { top: 20, right: 40, bottom: 50, left: 70 };
+  const cw  = W - pad.left - pad.right;
+  const ch  = H - pad.top - pad.bottom;
+  const maxV = 1400;
+  const n = 6;
+  const xs = months.map((_,i) => pad.left + (i / (n-1)) * cw);
+  const ys = v => pad.top + ch - (v / maxV) * ch;
+
+  let html = '';
+
+  // Grid
+  [0, 400, 800, 1200].forEach(v => {
+    const y = ys(v);
+    html += `<line x1="${pad.left}" y1="${y}" x2="${pad.left+cw}" y2="${y}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+    html += `<text x="${pad.left-10}" y="${y+4}" fill="#5a7080" font-size="10" text-anchor="end" font-family="DM Mono">${v}</text>`;
+  });
+  html += `<text x="${pad.left-48}" y="${pad.top + ch/2}" fill="#5a7080" font-size="10" transform="rotate(-90,${pad.left-48},${pad.top+ch/2})" text-anchor="middle" font-family="DM Mono">kg/month</text>`;
+
+  // Stymfalia area
+  const sPath = xs.map((x,i) => `${i===0?'M':'L'}${x},${ys(stym_vals[i])}`).join(' ');
+  const sArea = sPath + ` L${xs[n-1]},${ys(0)} L${xs[0]},${ys(0)} Z`;
+  html += `<path d="${sArea}" fill="rgba(56,128,192,0.12)"/>`;
+  html += `<path d="${sPath}" fill="none" stroke="#3880c0" stroke-width="2.5" stroke-linejoin="round"/>`;
+  stym_vals.forEach((v,i) => {
+    html += `<circle cx="${xs[i]}" cy="${ys(v)}" r="4" fill="#3880c0"/>`;
+    html += `<text x="${xs[i]}" y="${ys(v)-10}" fill="#3880c0" font-size="10" text-anchor="middle" font-family="DM Mono">${Math.round(v)}</text>`;
+  });
+
+  // Doxa area
+  const dPath = xs.map((x,i) => `${i===0?'M':'L'}${x},${ys(doxa_vals[i])}`).join(' ');
+  const dArea = dPath + ` L${xs[n-1]},${ys(0)} L${xs[0]},${ys(0)} Z`;
+  html += `<path d="${dArea}" fill="rgba(32,136,120,0.12)"/>`;
+  html += `<path d="${dPath}" fill="none" stroke="#208878" stroke-width="2.5" stroke-linejoin="round"/>`;
+  doxa_vals.forEach((v,i) => {
+    html += `<circle cx="${xs[i]}" cy="${ys(v)}" r="4" fill="#208878"/>`;
+  });
+
+  // X axis labels
+  months.forEach((m,i) => {
+    html += `<text x="${xs[i]}" y="${pad.top+ch+20}" fill="#5a7080" font-size="11" text-anchor="middle" font-family="DM Sans">${m}</text>`;
+  });
+
+  // Risk zone annotations
+  html += `<rect x="${pad.left}" y="${pad.top}" width="${cw}" height="${(1200/maxV-1)*-ch + ch}" fill="rgba(224,64,64,0.04)" stroke="rgba(224,64,64,0.08)" stroke-width="1"/>`;
+  html += `<text x="${pad.left + cw - 6}" y="${pad.top+14}" fill="rgba(224,64,64,0.5)" font-size="9" text-anchor="end" font-family="DM Mono">HIGH RISK ZONE</text>`;
+
+  svg.innerHTML = html;
+}
+
+// ── CONTAMINANT TABLE
+function buildContamTable() {
+  const tbody = document.getElementById('contam-tbody');
+  if (!tbody) return;
+
+  const rows = [
+    { name:"Dissolved organic carbon", source:"Forest/Shrub", kg:420, risk:"high",     decay:"organic",     peak:1 },
+    { name:"PAHs",                     source:"Forest/Shrub", kg:196, risk:"high",     decay:"organic",     peak:1 },
+    { name:"Nitrates",                 source:"Agricultural", kg:284, risk:"high",     decay:"nutrient",    peak:1 },
+    { name:"VOCs",                     source:"Urban fringe", kg:164, risk:"high",     decay:"organic",     peak:1 },
+    { name:"Phosphorus",               source:"Forest/Shrub", kg:85,  risk:"high",     decay:"nutrient",    peak:2 },
+    { name:"Copper",                   source:"Agricultural", kg:77,  risk:"high",     decay:"nutrient",    peak:2 },
+    { name:"Pesticide residues",       source:"Agricultural", kg:58,  risk:"moderate", decay:"nutrient",    peak:2 },
+    { name:"Lead",                     source:"Urban fringe", kg:22,  risk:"moderate", decay:"heavy_metal", peak:2 },
+    { name:"Zinc",                     source:"Agricultural", kg:18,  risk:"moderate", decay:"nutrient",    peak:2 },
+  ];
+
+  const maxKg = 420;
+  const riskColors = { high:"#c02020", moderate:"#d4a020", low:"#3a8040" };
+  const decayColors = { organic:"#3880c0", nutrient:"#208878", heavy_metal:"#c02020" };
+
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td style="color:#fff;font-weight:500">${r.name}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">${r.source}</td>
+      <td style="font-family:var(--font-mono);font-size:13px;color:var(--amber)">${r.kg.toFixed(1)}</td>
+      <td class="risk-bar-cell">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="risk-bar-track" style="flex:1">
+            <div class="risk-bar-fill" style="width:${(r.kg/maxKg)*100}%;background:${riskColors[r.risk]}"></div>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:9px;color:${riskColors[r.risk]};text-transform:uppercase;letter-spacing:0.05em;min-width:52px">${r.risk}</span>
+        </div>
+      </td>
+      <td><span style="font-family:var(--font-mono);font-size:10px;color:${decayColors[r.decay]};border:1px solid ${decayColors[r.decay]}33;padding:2px 6px;border-radius:3px">${r.decay}</span></td>
+      <td style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">Month ${r.peak}</td>
+    </tr>
+  `).join('');
+}
+
+// ── API JSON OUTPUT
+function renderAPIOutput() {
+  const el = document.getElementById('api-output');
+  if (!el) return;
+
+  const obj = {
+    location: "Lake Stymfalia",
+    coordinates: { lon: 22.456, lat: 37.852 },
+    status: "high_risk",
+    fire_event: { name: "Corinthia wildfire", ignition_date: "2024-09-29", total_fire_ha: 8195, copernicus_ref: "EMSR767", upstream_burned_ha: 3283.4 },
+    satellite_data: { source: "Sentinel-2 L2A", catchment_total_ha: 8200, catchment_burned_ha: 3420, burned_fraction_pct: 41.7, mean_dnbr: 0.38, mean_severity_class: 2 },
+    high_risk_contaminants: ["Dissolved organic carbon","PAHs","Phosphorus","Nitrates","Copper","VOCs"],
+    monthly_forecast: [
+      { month:1, label:"October 2024", total_load_kg:1284.6, dominant_contaminant:"Dissolved organic carbon", trigger:"First autumn rain — peak mobilisation of ash and burned soil" },
+      { month:2, label:"November 2024", total_load_kg:897.4, dominant_contaminant:"Dissolved organic carbon", trigger:"Secondary runoff — continued leaching from exposed soil" },
+      { month:3, label:"December 2024", total_load_kg:626.8, dominant_contaminant:"Dissolved organic carbon", trigger:"Ongoing leaching — load diminishing as soil stabilises" },
+    ],
+    peak_risk_month: 1, safe_after_month: 5,
+    generated_at: new Date().toISOString()
+  };
+
+  function colorize(s) {
+    return s
+      .replace(/"([^"]+)":/g,     '<span class="j-key">"$1"</span>:')
+      .replace(/: "([^"]+)"/g,    ': <span class="j-str">"$1"</span>')
+      .replace(/: ([\d.]+)/g,     ': <span class="j-num">$1</span>')
+      .replace(/: (true|false)/g, ': <span class="j-bool">$1</span>')
+      .replace(/: (null)/g,       ': <span class="j-null">$1</span>');
+  }
+
+  el.innerHTML = colorize(JSON.stringify(obj, null, 2));
+}
+
+// ── RECOMMENDATIONS
+function buildRecs() {
+  const list = document.getElementById('rec-list');
+  if (!list) return;
+  const recs = MOCK.stymfalia.recommendations;
+  const icons = ['🚨','🌲','🌾','🧪'];
+  const classes = ['rec-red','rec-amber','rec-amber','rec-green'];
+  list.innerHTML = recs.map((r,i) => `
+    <li class="rec-item">
+      <div class="rec-icon ${classes[i]}">${icons[i]}</div>
+      <div class="rec-text">${r}</div>
+    </li>
+  `).join('');
+}
+
+// ── BOOT
+window.addEventListener('load', () => {
+  drawDNBR();
+  drawSeverityChart();
+  drawForecastChart();
+  buildContamTable();
+  renderAPIOutput();
+  buildRecs();
+});
+
+window.addEventListener('resize', () => { drawDNBR(); });
+</script>
+</body>
+</html>

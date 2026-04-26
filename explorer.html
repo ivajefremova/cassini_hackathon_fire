@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ASHFLOW — Live Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --black:   #080a0c;
+  --surface: #0f1215;
+  --card:    #151a1e;
+  --card2:   #111518;
+  --border:  #1e2830;
+  --border2: #263040;
+  --text:    #d8e4ec;
+  --muted:   #5a7080;
+  --dim:     #384858;
+  --amber:   #f0a030;
+  --amber2:  #c07820;
+  --red:     #e04040;
+  --orange:  #d06030;
+  --green:   #38a060;
+  --blue:    #3880c0;
+  --teal:    #208878;
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: rgba(8,10,12,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+.logo-mark { width: 28px; height: 28px; background: var(--amber); clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+nav { display: flex; gap: 2px; }
+nav a { font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-decoration: none; padding: 6px 14px; border-radius: 4px; transition: all 0.15s; letter-spacing: 0.03em; }
+nav a:hover { color: var(--text); background: var(--border); }
+nav a.active { color: var(--amber); }
+.nav-cta { font-family: var(--font-mono); font-size: 11px; background: var(--border); color: var(--text); padding: 7px 16px; border-radius: 4px; text-decoration: none; letter-spacing: 0.03em; transition: background 0.15s; }
+.nav-cta:hover { background: var(--border2); }
+
+/* ── LAYOUT: three-column ── */
+.app {
+  display: grid;
+  grid-template-columns: 320px 1fr 400px;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+  padding-top: 56px;
+}
+
+/* ── LEFT: CONTROL PANEL ── */
+.controls {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+}
+
+.controls-header {
+  padding: 24px 24px 0;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+}
+.controls-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+.controls-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.field-group { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.field-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.field-label-sub { color: var(--muted); letter-spacing: 0; text-transform: none; font-size: 9px; }
+
+/* Region cards */
+.region-grid { display: flex; flex-direction: column; gap: 6px; }
+.region-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.region-card:hover { border-color: var(--border2); background: #1a2028; }
+.region-card.selected {
+  border-color: var(--amber2);
+  background: rgba(240,160,48,0.06);
+}
+.region-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.region-info { flex: 1; }
+.region-name { font-size: 13px; font-weight: 500; color: #fff; }
+.region-meta { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+.region-risk { font-family: var(--font-mono); font-size: 9px; padding: 2px 6px; border-radius: 3px; }
+
+/* Inputs */
+.input-field {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+  appearance: none;
+}
+.input-field:focus { border-color: var(--amber2); }
+.input-field option { background: var(--card); }
+
+.range-wrap { position: relative; }
+.range-input {
+  width: 100%;
+  accent-color: var(--amber);
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+}
+.range-val {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--amber);
+  margin-bottom: 4px;
+}
+
+/* Date inputs */
+.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* Run button */
+.run-wrap { padding: 20px 24px; }
+.run-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--amber);
+  color: var(--black);
+  border: none;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: -0.3px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.run-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.run-btn:active { transform: translateY(0); }
+.run-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.endpoint-preview {
+  margin-top: 12px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  word-break: break-all;
+  line-height: 1.6;
+}
+.endpoint-preview span { color: var(--amber); }
+
+/* API status indicator */
+.api-status-bar {
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+.status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+.status-dot.red    { background: var(--red); }
+.status-dot.amber  { background: var(--amber); }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+/* ── CENTER: MAP + RESULTS ── */
+.center-panel {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* Mini map */
+.map-area {
+  position: relative;
+  height: 320px;
+  background: #0a141e;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+#map-canvas { width: 100%; height: 100%; display: block; }
+
+.map-overlay-label {
+  position: absolute;
+  top: 12px; left: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  background: rgba(0,0,0,0.6);
+  padding: 4px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+
+/* Results area */
+.results-area { padding: 32px 32px; flex: 1; }
+
+.results-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: var(--dim);
+  text-align: center;
+  gap: 16px;
+}
+.results-placeholder-icon { font-size: 48px; opacity: 0.4; }
+.results-placeholder p { font-family: var(--font-mono); font-size: 12px; line-height: 1.8; }
+
+.results-content { display: none; }
+.results-content.visible { display: block; }
+
+.result-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.result-location {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -1px;
+}
+.result-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.result-status-chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+/* Metric cards */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.metric-card {
+  background: var(--card);
+  padding: 18px 16px;
+}
+.metric-val {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.metric-unit { font-size: 14px; color: var(--amber); }
+.metric-lbl {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 6px;
+}
+
+/* Monthly forecast bars */
+.monthly-section { margin-bottom: 28px; }
+.monthly-title { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 16px; letter-spacing: -0.3px; }
+
+.month-bars { display: flex; flex-direction: column; gap: 8px; }
+.month-bar-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 80px;
+  align-items: center;
+  gap: 12px;
+}
+.month-label { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.month-bar-track { height: 20px; background: var(--border2); border-radius: 3px; overflow: hidden; position: relative; }
+.month-bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; padding-left: 8px; }
+.month-bar-inner-label { font-family: var(--font-mono); font-size: 10px; color: rgba(0,0,0,0.7); white-space: nowrap; }
+.month-kg { font-family: var(--font-mono); font-size: 11px; color: var(--amber); text-align: right; }
+
+/* Contaminant chips */
+.contam-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.contam-chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+  border: 1px solid;
+}
+.contam-high { color: var(--red); border-color: rgba(224,64,64,0.3); background: rgba(224,64,64,0.08); }
+.contam-mod  { color: var(--amber); border-color: rgba(240,160,48,0.3); background: rgba(240,160,48,0.08); }
+
+/* Recommendations */
+.rec-section { margin-top: 24px; }
+.rec-section-title { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 14px; letter-spacing: -0.3px; }
+.rec-item { display: flex; gap: 12px; padding: 14px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; }
+.rec-num { font-family: var(--font-mono); font-size: 10px; color: var(--amber); flex-shrink: 0; padding-top: 2px; }
+.rec-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* Loading spinner */
+.loading-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(8,10,12,0.85);
+  z-index: 10;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.loading-overlay.active { display: flex; }
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border2);
+  border-top-color: var(--amber);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+/* ── RIGHT: JSON VIEWER ── */
+.json-panel {
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+}
+.json-panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.json-method { font-family: var(--font-mono); font-size: 10px; background: rgba(56,160,96,0.15); color: var(--green); border: 1px solid rgba(56,160,96,0.3); padding: 3px 7px; border-radius: 3px; }
+.json-url { font-family: var(--font-mono); font-size: 11px; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.json-status-ok  { font-family: var(--font-mono); font-size: 10px; color: var(--green); }
+.json-status-err { font-family: var(--font-mono); font-size: 10px; color: var(--red); }
+
+.json-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.json-tab {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.json-tab:hover { color: var(--text); }
+.json-tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+
+.json-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.8;
+  color: #8ba8bc;
+  white-space: pre;
+}
+.json-body::-webkit-scrollbar { width: 3px; }
+.json-body::-webkit-scrollbar-track { background: transparent; }
+.json-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.json-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  gap: 8px;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* Syntax colors */
+.j-key   { color: #73a8d0; }
+.j-str   { color: #c3e88d; }
+.j-num   { color: var(--amber); }
+.j-bool  { color: #c792ea; }
+.j-null  { color: var(--muted); }
+
+/* Error message */
+.error-box {
+  display: none;
+  margin: 24px 32px;
+  padding: 16px 20px;
+  background: rgba(224,64,64,0.08);
+  border: 1px solid rgba(224,64,64,0.25);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--red);
+  line-height: 1.7;
+}
+.error-box.visible { display: block; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Fade animation */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.fade-in { animation: fadeIn 0.4s ease; }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="logo">
+    <div class="logo-mark"></div>
+     ASHFLOW
+  </div>
+  <nav>
+    <a href="index.html">Pipeline Output</a>
+    <a href="explorer.html" class="active">Live Explorer</a>
+  </nav>
+  <a href="index.html" class="nav-cta">← View Pipeline</a>
+</header>
+
+<!-- ══ THREE-COLUMN APP ══ -->
+<div class="app">
+
+  <!-- ── LEFT: CONTROLS ── -->
+  <aside class="controls">
+
+    <div class="api-status-bar" id="api-status-bar">
+      <div class="status-dot amber" id="status-dot"></div>
+      <span id="status-text" style="color:var(--muted)">Checking API...</span>
+    </div>
+
+    <div class="controls-header">
+      <div class="controls-title">Query Parameters</div>
+      <div class="controls-sub">Configure and run a live forecast</div>
+    </div>
+
+    <!-- Region select -->
+    <div class="field-group">
+      <div class="field-label">
+        Region / Lake
+        <span class="field-label-sub">upstream catchment</span>
+      </div>
+      <div class="region-grid" id="region-grid">
+
+        <div class="region-card selected" data-key="stymfalia" onclick="selectRegion(this)">
+          <div class="region-dot" style="background:#3880c0"></div>
+          <div class="region-info">
+            <div class="region-name">Lake Stymfalia</div>
+            <div class="region-meta">37.852°N · 22.456°E · 626m · Natura 2000</div>
+          </div>
+          <span class="region-risk risk-high" style="background:rgba(224,64,64,0.12);color:var(--red);border:1px solid rgba(224,64,64,0.25);font-family:var(--font-mono);font-size:9px;padding:3px 6px;border-radius:3px">HIGH</span>
+        </div>
+
+        <div class="region-card" data-key="doxa" onclick="selectRegion(this)">
+          <div class="region-dot" style="background:#208878"></div>
+          <div class="region-info">
+            <div class="region-name">Lake Doxa</div>
+            <div class="region-meta">37.940°N · 22.280°E · 900m · Irrigation</div>
+          </div>
+          <span class="region-risk" style="background:rgba(240,160,48,0.12);color:var(--amber);border:1px solid rgba(240,160,48,0.25);font-family:var(--font-mono);font-size:9px;padding:3px 6px;border-radius:3px">MOD</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Pre-fire dates -->
+    <div class="field-group">
+      <div class="field-label">Pre-fire Window</div>
+      <div class="date-row">
+        <div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-bottom:5px">START</div>
+          <input class="input-field" type="date" id="pre-start" value="2024-07-01" />
+        </div>
+        <div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-bottom:5px">END</div>
+          <input class="input-field" type="date" id="pre-end" value="2024-09-20" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Post-fire dates -->
+    <div class="field-group">
+      <div class="field-label">Post-fire Window</div>
+      <div class="date-row">
+        <div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-bottom:5px">START</div>
+          <input class="input-field" type="date" id="post-start" value="2024-10-01" />
+        </div>
+        <div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-bottom:5px">END</div>
+          <input class="input-field" type="date" id="post-end" value="2024-10-25" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Forecast months -->
+    <div class="field-group">
+      <div class="field-label">Forecast Horizon</div>
+      <div class="range-val" id="months-display">6</div>
+      <div class="range-wrap">
+        <input class="range-input" type="range" id="months-slider" min="1" max="24" value="6"
+          oninput="document.getElementById('months-display').textContent=this.value; updatePreview()" />
+        <div class="range-labels"><span>1 month</span><span>24 months</span></div>
+      </div>
+    </div>
+
+    <!-- Run -->
+    <div class="run-wrap">
+      <button class="run-btn" id="run-btn" onclick="runQuery()">
+        <span id="run-label">▶ Run Forecast</span>
+      </button>
+      <div class="endpoint-preview" id="endpoint-preview">
+        GET <span>http://localhost:8000</span>/api/forecast/<span id="prev-lake">stymfalia</span>?months=<span id="prev-months">6</span>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ── CENTER: MAP + RESULTS ── -->
+  <div class="center-panel" id="center-panel">
+
+    <!-- Map -->
+    <div class="map-area">
+      <canvas id="map-canvas"></canvas>
+      <div class="map-overlay-label" id="map-label">CORINTHIA · GREECE · dNBR COMPOSITE</div>
+      <div class="loading-overlay" id="map-loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Querying Copernicus...</div>
+      </div>
+    </div>
+
+    <!-- Error box -->
+    <div class="error-box" id="error-box"></div>
+
+    <!-- Placeholder -->
+    <div class="results-placeholder" id="results-placeholder">
+      <div class="results-placeholder-icon">⬡</div>
+      <p>Select a region and press<br/><strong style="color:var(--amber)">Run Forecast</strong><br/>to query the ASHFLOW API.</p>
+    </div>
+
+    <!-- Results -->
+    <div class="results-area">
+      <div class="results-content" id="results-content">
+
+        <div class="result-header">
+          <div>
+            <div class="result-location" id="res-location">—</div>
+            <div class="result-sub" id="res-sub">—</div>
+          </div>
+          <div class="result-status-chip" id="res-status-chip"></div>
+        </div>
+
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-val" id="m-burned">—<span class="metric-unit">ha</span></div>
+            <div class="metric-lbl">Burned upstream</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="m-fraction">—<span class="metric-unit">%</span></div>
+            <div class="metric-lbl">Catchment burned</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="m-dnbr">—</div>
+            <div class="metric-lbl">Mean dNBR</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="m-peak">—<span class="metric-unit">kg</span></div>
+            <div class="metric-lbl">Peak month load</div>
+          </div>
+        </div>
+
+        <!-- Contaminants -->
+        <div style="margin-bottom:24px">
+          <div class="monthly-title">High-risk contaminants</div>
+          <div class="contam-chips" id="res-contams"></div>
+        </div>
+
+        <!-- Monthly bars -->
+        <div class="monthly-section">
+          <div class="monthly-title">Monthly contamination load</div>
+          <div class="month-bars" id="month-bars"></div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="rec-section">
+          <div class="rec-section-title">Recommendations</div>
+          <div id="rec-list"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── RIGHT: JSON VIEWER ── -->
+  <div class="json-panel">
+    <div class="json-panel-header">
+      <span class="json-method">GET</span>
+      <span class="json-url" id="json-url">—</span>
+      <span class="json-status-ok" id="json-status"></span>
+    </div>
+    <div class="json-tabs">
+      <div class="json-tab active" onclick="showTab('response',this)">Response</div>
+      <div class="json-tab" onclick="showTab('request',this)">Request</div>
+    </div>
+    <div class="json-body" id="json-response-body">
+      <div class="json-empty">No request sent yet.<br/>Configure parameters<br/>and run a forecast.</div>
+    </div>
+    <div class="json-body" id="json-request-body" style="display:none">
+      <div class="json-empty">No request sent yet.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   EXPLORER — JAVASCRIPT
+══════════════════════════════════════════════════ */
+
+const API_BASE = 'http://localhost:8000';
+
+let selectedLake = 'stymfalia';
+let lastResponse = null;
+let activeTab    = 'response';
+
+// ── MOCK DATA (fallback when API is unreachable)
+const MOCK_RESPONSES = {
+  stymfalia: {
+    location: "Lake Stymfalia", coordinates: { lon: 22.456, lat: 37.852 },
+    elevation_m: 626, lake_type: "natural_wetland", protected_area: "Natura 2000",
+    primary_use: "Ecological / limited irrigation",
+    status: "high_risk",
+    fire_event: { name:"Corinthia wildfire", ignition_date:"2024-09-29", total_fire_ha:8195, copernicus_ref:"EMSR767", upstream_burned_ha: 3283 },
+    satellite_data: { source:"Sentinel-2 L2A", data_source:"sentinel2_live", catchment_total_ha:8200, catchment_burned_ha:3420, burned_fraction_pct:41.7, mean_dnbr:0.38, mean_severity_class:2 },
+    high_risk_contaminants: ["Dissolved organic carbon","PAHs","Phosphorus","Nitrates","Copper","VOCs"],
+    monthly_forecast: [
+      { month:1, label:"October 2024",  total_load_kg:1284.6, dominant_contaminant:"Dissolved organic carbon", trigger:"First autumn rain — peak mobilisation" },
+      { month:2, label:"November 2024", total_load_kg:897.4,  dominant_contaminant:"Dissolved organic carbon", trigger:"Secondary runoff" },
+      { month:3, label:"December 2024", total_load_kg:626.8,  dominant_contaminant:"Dissolved organic carbon", trigger:"Ongoing leaching" },
+      { month:4, label:"January 2025",  total_load_kg:438.0,  dominant_contaminant:"PAHs",                     trigger:"Residual contamination" },
+      { month:5, label:"February 2025", total_load_kg:306.0,  dominant_contaminant:"PAHs",                     trigger:"Residual contamination" },
+      { month:6, label:"March 2025",    total_load_kg:213.8,  dominant_contaminant:"Nitrates",                 trigger:"Residual contamination" },
+    ],
+    peak_risk_month: 1, peak_risk_label: "October 2024", safe_after_month: 5,
+    recommendations: [
+      "Peak contamination load of 1,285 kg expected in October 2024. Risk diminishes significantly by month 5.",
+      "3,267 ha of burned forest/shrubland drains upstream. PAH and organic carbon peaks in month 1 then decays ~35%/month. Prepare activated carbon water treatment before first rain.",
+      "616 ha of agricultural land burned upstream. Pesticide residues and elevated nitrates/copper expected months 1–3.",
+      "Test water at Lake Stymfalia inlet after each rainfall event exceeding 15mm during the first 5 months post-fire."
+    ]
+  },
+  doxa: {
+    location: "Lake Doxa", coordinates: { lon: 22.280, lat: 37.940 },
+    elevation_m: 900, lake_type: "artificial_reservoir", protected_area: null,
+    primary_use: "Irrigation and water supply",
+    status: "moderate_risk",
+    fire_event: { name:"Corinthia wildfire", ignition_date:"2024-09-29", total_fire_ha:8195, copernicus_ref:"EMSR767", upstream_burned_ha: 1595 },
+    satellite_data: { source:"Sentinel-2 L2A", data_source:"sentinel2_live", catchment_total_ha:6100, catchment_burned_ha:1595, burned_fraction_pct:26.2, mean_dnbr:0.29, mean_severity_class:2 },
+    high_risk_contaminants: ["Nitrates","Pesticide residues","Copper"],
+    monthly_forecast: [
+      { month:1, label:"October 2024",  total_load_kg:712.3, dominant_contaminant:"Nitrates", trigger:"First autumn rain — peak mobilisation" },
+      { month:2, label:"November 2024", total_load_kg:497.8, dominant_contaminant:"Nitrates", trigger:"Secondary runoff" },
+      { month:3, label:"December 2024", total_load_kg:347.6, dominant_contaminant:"Dissolved organic carbon", trigger:"Ongoing leaching" },
+      { month:4, label:"January 2025",  total_load_kg:242.9, dominant_contaminant:"PAHs", trigger:"Residual contamination" },
+      { month:5, label:"February 2025", total_load_kg:169.7, dominant_contaminant:"PAHs", trigger:"Residual contamination" },
+      { month:6, label:"March 2025",    total_load_kg:118.5, dominant_contaminant:"Nitrates", trigger:"Residual contamination" },
+    ],
+    peak_risk_month: 1, peak_risk_label: "October 2024", safe_after_month: 4,
+    recommendations: [
+      "Peak contamination load of 712 kg expected in October 2024.",
+      "861 ha of burned forest/shrubland drains upstream. Prepare activated carbon water treatment before first rain.",
+      "638 ha of agricultural land burned upstream. Pesticide residues and elevated nitrates/copper/zinc expected months 1–3. Suspend irrigation from Lake Doxa until water quality is confirmed.",
+      "Test water at Lake Doxa inlet after each rainfall event exceeding 15mm during the first 4 months post-fire."
+    ]
+  }
+};
+
+// ── REGION SELECT
+function selectRegion(el) {
+  document.querySelectorAll('.region-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedLake = el.dataset.key;
+  updatePreview();
+  drawMap();
+}
+
+function updatePreview() {
+  const months = document.getElementById('months-slider').value;
+  document.getElementById('prev-lake').textContent    = selectedLake;
+  document.getElementById('prev-months').textContent  = months;
+  document.getElementById('json-url').textContent =
+    `${API_BASE}/api/forecast/${selectedLake}?months=${months}`;
+}
+
+// ── API HEALTH CHECK
+async function checkAPIStatus() {
+  const dot  = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  try {
+    const r = await fetch(`${API_BASE}/`, { signal: AbortSignal.timeout(3000) });
+    if (r.ok) {
+      dot.className  = 'status-dot green';
+      text.textContent = 'API online · localhost:8000';
+      text.style.color = 'var(--green)';
+    } else {
+      throw new Error();
+    }
+  } catch {
+    dot.className  = 'status-dot red';
+    text.textContent = 'API offline — using demo data';
+    text.style.color = 'var(--red)';
+  }
+}
+
+// ── RUN QUERY
+async function runQuery() {
+  const months   = parseInt(document.getElementById('months-slider').value);
+  const lake     = selectedLake;
+  const url      = `${API_BASE}/api/forecast/${lake}?months=${months}`;
+
+  const runBtn   = document.getElementById('run-btn');
+  const label    = document.getElementById('run-label');
+  const loading  = document.getElementById('map-loading');
+  const errBox   = document.getElementById('error-box');
+
+  runBtn.disabled = true;
+  label.textContent = '⏳ Running...';
+  loading.classList.add('active');
+  errBox.classList.remove('visible');
+
+  // Build request info for display
+  const requestObj = {
+    method: "GET",
+    url: url,
+    parameters: {
+      lake_key: lake,
+      months: months,
+      pre_fire_start:  document.getElementById('pre-start').value,
+      pre_fire_end:    document.getElementById('pre-end').value,
+      post_fire_start: document.getElementById('post-start').value,
+      post_fire_end:   document.getElementById('post-end').value,
+    },
+    note: "Date params passed for display only — backend uses fixed pipeline dates. Re-run sentinel_pipeline.py to change dates."
+  };
+
+  let data = null;
+  let usedMock = false;
+  let t0 = Date.now();
+
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    data = await res.json();
+  } catch(e) {
+    // Fall back to mock data gracefully
+    usedMock = true;
+    data = scaleMockData(MOCK_RESPONSES[lake], months);
+    console.warn('API unreachable — using embedded mock data:', e.message);
+  }
+
+  const elapsed = Date.now() - t0;
+  loading.classList.remove('active');
+  runBtn.disabled = false;
+  label.textContent = '▶ Run Forecast';
+
+  if (!data) {
+    errBox.textContent = 'Error: Could not reach the API and no mock data available.';
+    errBox.classList.add('visible');
+    return;
+  }
+
+  lastResponse = data;
+  document.getElementById('json-url').textContent = url;
+  document.getElementById('json-status').textContent = usedMock
+    ? '⚠ demo data'
+    : `● 200 OK · ${elapsed}ms`;
+  document.getElementById('json-status').style.color = usedMock ? 'var(--amber)' : 'var(--green)';
+
+  if (usedMock) {
+    errBox.innerHTML = `⚠ API at <strong>localhost:8000</strong> is not reachable. Showing <strong>demo data</strong> for ${lake}.<br/>Start your FastAPI server with: <code style="color:var(--amber)">uvicorn api:app --reload --port 8000</code>`;
+    errBox.classList.add('visible');
+  }
+
+  renderResults(data);
+  renderJSON(data, requestObj, usedMock);
+  drawMap(lake);
+}
+
+// Scale mock forecast to requested months
+function scaleMockData(base, months) {
+  const copy = JSON.parse(JSON.stringify(base));
+  if (months <= copy.monthly_forecast.length) {
+    copy.monthly_forecast = copy.monthly_forecast.slice(0, months);
+  } else {
+    // Extend with decayed values
+    const last = copy.monthly_forecast[copy.monthly_forecast.length - 1];
+    for (let m = copy.monthly_forecast.length + 1; m <= months; m++) {
+      copy.monthly_forecast.push({
+        month: m,
+        label: `Month ${m}`,
+        total_load_kg: Math.round(last.total_load_kg * 0.7),
+        dominant_contaminant: last.dominant_contaminant,
+        trigger: "Residual contamination — revegetation reducing runoff"
+      });
+    }
+  }
+  return copy;
+}
+
+// ── RENDER RESULTS
+function renderResults(d) {
+  document.getElementById('results-placeholder').style.display = 'none';
+  const content = document.getElementById('results-content');
+  content.classList.add('visible', 'fade-in');
+
+  document.getElementById('res-location').textContent = d.location;
+  document.getElementById('res-sub').textContent =
+    `${d.lake_type} · ${d.elevation_m}m · ${d.primary_use}`;
+
+  const chip = document.getElementById('res-status-chip');
+  const statusMap = {
+    high_risk:     ['HIGH RISK',     'var(--red)',   'rgba(224,64,64,0.12)',  'rgba(224,64,64,0.25)'],
+    moderate_risk: ['MODERATE RISK', 'var(--amber)', 'rgba(240,160,48,0.12)', 'rgba(240,160,48,0.25)'],
+    low_risk:      ['LOW RISK',      'var(--green)', 'rgba(56,160,96,0.12)',  'rgba(56,160,96,0.25)'],
+  };
+  const [label, col, bg, bdr] = statusMap[d.status] || statusMap.low_risk;
+  chip.textContent = label;
+  chip.style.cssText = `color:${col};background:${bg};border:1px solid ${bdr};font-family:var(--font-mono);font-size:11px;padding:6px 14px;border-radius:4px;letter-spacing:0.05em`;
+
+  // Metrics
+  const sd = d.satellite_data;
+  document.getElementById('m-burned').innerHTML   = `${sd.catchment_burned_ha?.toLocaleString() || '—'}<span class="metric-unit">ha</span>`;
+  document.getElementById('m-fraction').innerHTML = `${sd.burned_fraction_pct || '—'}<span class="metric-unit">%</span>`;
+  document.getElementById('m-dnbr').textContent   = sd.mean_dnbr || '—';
+  const peakKg = d.monthly_forecast?.[0]?.total_load_kg || 0;
+  document.getElementById('m-peak').innerHTML     = `${Math.round(peakKg).toLocaleString()}<span class="metric-unit">kg</span>`;
+
+  // Contaminants
+  const contams = document.getElementById('res-contams');
+  contams.innerHTML = (d.high_risk_contaminants || []).map(c =>
+    `<span class="contam-chip contam-high">${c}</span>`
+  ).join('');
+
+  // Monthly bars
+  const maxKg = Math.max(...(d.monthly_forecast || []).map(m => m.total_load_kg));
+  const bars = document.getElementById('month-bars');
+  bars.innerHTML = (d.monthly_forecast || []).map((m, i) => {
+    const pct   = Math.round((m.total_load_kg / maxKg) * 100);
+    const color = pct > 70 ? '#c02020' : pct > 40 ? '#d06030' : pct > 20 ? '#d4a020' : '#3a8040';
+    const short = m.label.split(' ')[0]; // just month name
+    return `
+      <div class="month-bar-row">
+        <div class="month-label">${short} ${i===0?'<span style="color:var(--amber);font-size:9px">(peak)</span>':''}</div>
+        <div class="month-bar-track">
+          <div class="month-bar-fill" style="width:${pct}%;background:${color}">
+            ${pct > 30 ? `<span class="month-bar-inner-label">${m.dominant_contaminant}</span>` : ''}
+          </div>
+        </div>
+        <div class="month-kg">${Math.round(m.total_load_kg).toLocaleString()} kg</div>
+      </div>
+    `;
+  }).join('');
+
+  // Recommendations
+  const recList = document.getElementById('rec-list');
+  recList.innerHTML = (d.recommendations || []).map((r, i) => `
+    <div class="rec-item">
+      <div class="rec-num">0${i+1}</div>
+      <div class="rec-text">${r}</div>
+    </div>
+  `).join('');
+}
+
+// ── JSON SYNTAX HIGHLIGHT
+function colorizeJSON(json) {
+  return JSON.stringify(json, null, 2)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"([^"]+)":/g,     '<span class="j-key">"$1"</span>:')
+    .replace(/: "([^"]+)"/g,    ': <span class="j-str">"$1"</span>')
+    .replace(/: (-?[\d.]+)/g,   ': <span class="j-num">$1</span>')
+    .replace(/: (true|false)/g, ': <span class="j-bool">$1</span>')
+    .replace(/: (null)/g,       ': <span class="j-null">$1</span>');
+}
+
+function renderJSON(data, requestObj, isMock) {
+  document.getElementById('json-response-body').innerHTML = colorizeJSON(data);
+  document.getElementById('json-request-body').innerHTML  = colorizeJSON(requestObj);
+}
+
+// ── JSON TABS
+function showTab(tab, el) {
+  document.querySelectorAll('.json-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  activeTab = tab;
+  document.getElementById('json-response-body').style.display = tab === 'response' ? 'block' : 'none';
+  document.getElementById('json-request-body').style.display  = tab === 'request'  ? 'block' : 'none';
+}
+
+// ── MAP CANVAS
+function drawMap(highlightLake) {
+  const canvas = document.getElementById('map-canvas');
+  const w = canvas.offsetWidth || 600;
+  const h = canvas.offsetHeight || 300;
+  canvas.width  = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  const bg = ctx.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, '#08141e');
+  bg.addColorStop(1, '#0a1018');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, w, h);
+
+  // Terrain noise
+  for (let i = 0; i < 3000; i++) {
+    ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.012})`;
+    ctx.fillRect(Math.random()*w, Math.random()*h, 1.5, 1.5);
+  }
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < w; x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+  for (let y = 0; y < h; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+
+  // Fire patches (dNBR)
+  const patches = [
+    { x:.62, y:.42, rx:.16, ry:.20, sev:4 },
+    { x:.55, y:.52, rx:.10, ry:.12, sev:3 },
+    { x:.70, y:.35, rx:.08, ry:.10, sev:3 },
+    { x:.22, y:.36, rx:.10, ry:.13, sev:3 },
+    { x:.40, y:.60, rx:.12, ry:.09, sev:1 },
+    { x:.75, y:.55, rx:.09, ry:.07, sev:1 },
+  ];
+  const sevC = [null,[40,80,20,0.5],[180,140,20,0.6],[190,80,25,0.7],[180,20,20,0.78]];
+  patches.forEach(p => {
+    const [r,g,b,a] = sevC[p.sev];
+    const cx=p.x*w, cy=p.y*h, rx=p.rx*w, ry=p.ry*h;
+    const g2 = ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(rx,ry));
+    g2.addColorStop(0,   `rgba(${r},${g},${b},${a})`);
+    g2.addColorStop(0.6, `rgba(${r},${g},${b},${a*0.4})`);
+    g2.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+    ctx.save(); ctx.scale(1,ry/rx);
+    ctx.beginPath(); ctx.arc(cx,cy*(rx/ry),rx,0,Math.PI*2);
+    ctx.fillStyle=g2; ctx.fill(); ctx.restore();
+  });
+
+  // Lakes
+  const lakes = {
+    stymfalia: { x:.62*w, y:.65*h, label:'Lake Stymfalia', color:'#3880c0' },
+    doxa:      { x:.21*w, y:.38*h, label:'Lake Doxa',      color:'#208878' }
+  };
+
+  Object.entries(lakes).forEach(([key, l]) => {
+    const isHL = key === (highlightLake || 'stymfalia');
+    // Lake blob
+    const g3 = ctx.createRadialGradient(l.x,l.y,0,l.x,l.y,20);
+    g3.addColorStop(0, `${l.color}e0`);
+    g3.addColorStop(1, `${l.color}00`);
+    ctx.beginPath(); ctx.arc(l.x,l.y,18,0,Math.PI*2);
+    ctx.fillStyle=g3; ctx.fill();
+
+    // Ring
+    ctx.beginPath(); ctx.arc(l.x,l.y, isHL?22:14,0,Math.PI*2);
+    ctx.strokeStyle = isHL ? '#fff' : `${l.color}88`;
+    ctx.lineWidth   = isHL ? 2 : 1;
+    ctx.stroke();
+
+    if (isHL) {
+      ctx.beginPath(); ctx.arc(l.x,l.y,30,0,Math.PI*2);
+      ctx.strokeStyle=`${l.color}44`; ctx.lineWidth=1; ctx.stroke();
+    }
+
+    // Label
+    const lw = ctx.measureText(l.label).width + 16;
+    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+    ctx.beginPath();
+    ctx.roundRect(l.x - lw/2, l.y - 40, lw, 20, 3);
+    ctx.fill();
+    ctx.fillStyle = isHL ? '#fff' : `${l.color}cc`;
+    ctx.font = `${isHL?'500':''} 10px "DM Mono", monospace`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(l.label, l.x, l.y - 30);
+
+    // Connector
+    ctx.beginPath(); ctx.moveTo(l.x, l.y-20); ctx.lineTo(l.x, l.y-10);
+    ctx.strokeStyle=isHL?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.2)';
+    ctx.lineWidth=1; ctx.stroke();
+  });
+
+  // Compass
+  ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font='10px "DM Mono"'; ctx.textAlign='right';
+  ctx.fillText('N↑', w-14, 24);
+}
+
+// ── INIT
+window.addEventListener('load', () => {
+  drawMap();
+  checkAPIStatus();
+  updatePreview();
+});
+
+window.addEventListener('resize', () => { drawMap(selectedLake); });
+</script>
+</body>
+</html>
